@@ -1,7 +1,6 @@
 package FunInterface;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.Predicate;
+import java.util.function.*;
+
 public class AllTypesLambdaImplementation {
     public static void main(String[] args) {
 
@@ -21,5 +20,13 @@ public class AllTypesLambdaImplementation {
         Predicate<Integer> p = x -> x % 2 == 0;
         System.out.println("Even: " + p.test(4));
         System.out.println("Even: " + p.test(7));
+
+        //Function
+        BiFunction<Integer , Integer , Integer> f = (a,b) -> a + b ;
+        System.out.println(f.apply(7,8));
+
+        Function<Integer , Integer> sq = (x) -> x*x ;
+        System.out.println(sq.apply(4));
+
     }
 }
