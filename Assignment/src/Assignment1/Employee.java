@@ -55,9 +55,10 @@ class Employee {
         employees.add(new Employee(102, "Priya", "Admin", 8000, 150000));
         employees.add(new Employee(103, "Neha", "Engineer", 12000, 180000));
 
-        employees.sort(
-                (e1, e2) -> Double.compare(e2.calculateBonus(), e1.calculateBonus())
-        );
+//        employees.sort(
+//                (e1, e2) -> Double.compare(e2.calculateBonus(), e1.calculateBonus())
+//        );
+        Collections.sort(employees , Comparator.comparingDouble((Employee e) -> e.calculateBonus()));
 
         for (Employee employee : employees) {
             employee.display();
