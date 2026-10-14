@@ -2,6 +2,8 @@ package Streams;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Task2 {
     public static void main(String[] args){
@@ -10,8 +12,10 @@ public class Task2 {
         employee.add(new Employee(101, "Aman", "Accountant", 50000));
         employee.add(new Employee(102, "Priya", "Admin", 80000));
         employee.add(new Employee(103, "Anaya", "Manager", 120000));
-        employee.stream().filter(e -> e.name.startsWith("A"))
-                .map(e -> e.name.toUpperCase())
-                .sorted().forEach(System.out :: println);
+        Map<String, Integer> deptSalarySum = employee.stream().collect(Collectors.groupingBy(e -> e.dept, Collectors.summingInt(e -> e.salary)));
+
+        deptSalarySum.forEach((dept, sum) ->
+                System.out.println("Department: " + dept + " | Total Salary: " + sum)
+        );
     }
 }
