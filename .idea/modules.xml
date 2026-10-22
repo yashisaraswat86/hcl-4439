@@ -2,9 +2,19 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Classroom/Day3/src/Collections/Collections.iml" filepath="$PROJECT_DIR$/Classroom/Day3/src/Collections/Collections.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HCL_2027.iml" filepath="$PROJECT_DIR$/HCL_2027.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Module1/Module1.iml" filepath="$PROJECT_DIR$/Module1/Module1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/ABES_HCL_JAVA.iml" filepath="$PROJECT_DIR$/Classroom/ABES_HCL_JAVA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Assessment/Assessment.iml" filepath="$PROJECT_DIR$/Assessment/Assessment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Assignment/Assignment.iml" filepath="$PROJECT_DIR$/Assignment/Assignment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day1/Day1.iml" filepath="$PROJECT_DIR$/Classroom/Day1/Day1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day2/Day2.iml" filepath="$PROJECT_DIR$/Classroom/Day2/Day2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day3/Day3.iml" filepath="$PROJECT_DIR$/Classroom/Day3/Day3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day4/Day4.iml" filepath="$PROJECT_DIR$/Classroom/Day4/Day4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day5/Day5.iml" filepath="$PROJECT_DIR$/Classroom/Day5/Day5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day6/Day6.iml" filepath="$PROJECT_DIR$/Classroom/Day6/Day6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day7/Day7.iml" filepath="$PROJECT_DIR$/Classroom/Day7/Day7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Classroom/Day8/Day8.iml" filepath="$PROJECT_DIR$/Classroom/Day8/Day8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Assessment/HCL_Assessment_2_COREJAVA_2300321540218_YashiSraswat/HCL_Assessment_2_COREJAVA_2300321540218_YashiSraswat.iml" filepath="$PROJECT_DIR$/Assessment/HCL_Assessment_2_COREJAVA_2300321540218_YashiSraswat/HCL_Assessment_2_COREJAVA_2300321540218_YashiSraswat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SelfLearning/SelfLearning.iml" filepath="$PROJECT_DIR$/SelfLearning/SelfLearning.iml" />
     </modules>
   </component>
 </project>
