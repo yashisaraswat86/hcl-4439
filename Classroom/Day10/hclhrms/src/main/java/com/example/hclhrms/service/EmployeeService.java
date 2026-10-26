@@ -22,10 +22,18 @@ public class EmployeeService {
     }
 
     public Employee getEmpById(){
-            return employeeRepoImp.getEmpById(101);
+            return employeeRepoImp.getEmpById(104);
     }
 
     public List<Employee> getAllmp() {
         return employeeRepoImp.addAllEmp();
+    }
+
+    public String deleteid(){
+        return employeeRepoImp.deleteById(104) ;
+    }
+
+    public String updateById() {
+        return employeeRepoImp.updateById(104);
     }
 }

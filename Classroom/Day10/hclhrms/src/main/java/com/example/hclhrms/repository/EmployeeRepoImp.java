@@ -23,19 +23,38 @@ public class EmployeeRepoImp implements EmployeeRepo{
 
     @Override
     public Employee getEmpById(int emp_id) {
-        return employeeList.stream().filter(e -> e.getEmp_id() == emp_id).findFirst().orElse(null);
-
-    }
-
-    @Override
-    public String deleteById(int emp_id) {
-        return "Employee Deleted";
+        Employee emp = employeeList.stream().filter(e -> e.getEmp_id() == emp_id).findFirst().orElse(null);
+        if (emp != null){
+            return emp;
+        }
+        System.out.println("Employee not found");
+        return null;
     }
 
     @Override
     public String updateById(int emp_id) {
-        return "Employee Updated";
+        Employee emp = getEmpById(emp_id);
+
+        if (emp != null) {
+            emp.setEmp_id(111);
+            return "Employee Updated";
+        }
+
+        return "Employee Not Present " + emp_id;
     }
+
+    @Override
+    public String deleteById(int emp_id) {
+        boolean removed = employeeList.removeIf(e -> e.getEmp_id() == emp_id);
+
+        if (removed) {
+            return "Employee Deleted " + emp_id;
+        }
+
+        return "Not Present " + emp_id;
+    }
+
+
 
 
 
@@ -52,6 +71,10 @@ public class EmployeeRepoImp implements EmployeeRepo{
                 new Employee(109, "Arjun", "CSE", "Python", "arjun@gmail.com"),
                 new Employee(110, "Pooja", "IT", "Spring Boot", "pooja@gmail.com")
         ));
+
+        employeeList.addAll(ls);
         return ls ;
     }
+
+
 }

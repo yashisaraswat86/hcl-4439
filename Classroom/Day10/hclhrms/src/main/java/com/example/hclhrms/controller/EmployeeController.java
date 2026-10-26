@@ -3,8 +3,7 @@ package com.example.hclhrms.controller;
 import com.example.hclhrms.entity.Employee;
 import com.example.hclhrms.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,5 +37,15 @@ public class EmployeeController {
     @GetMapping("/getall")
     public  List<Employee> getAllEmp(){
         return employeeService.getAllmp() ;
+    }
+
+    @DeleteMapping("/delete")
+    public String deleteid(){
+        return employeeService.deleteid();
+    }
+
+    @PutMapping("/update")
+    public String updateById() {
+        return employeeService.updateById();
     }
 }
