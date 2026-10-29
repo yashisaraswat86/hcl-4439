@@ -6,46 +6,87 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
+
     @Autowired
-    private EmployeeRepo employeeRepo ;
+    private EmployeeRepo employeeRepo;
 
-    public String createNewEmployee(){
-        Employee emp1 = new Employee(2001 , "Ram" , "Java" , "Manager" ) ;
-        employeeRepo.save(emp1);
-        return "Employee added" ;
+    public String createEmployee(Employee employee) {
+        employeeRepo.save(employee);
+        return "Employee added successfully";
     }
 
-    public Employee getEmpById(Long empid){
-        return employeeRepo.findById(empid).orElse(null);
+    public String addEmployeeBulk(List<Employee> employees) {
+        employeeRepo.saveAll(employees);
+        return "All employees added successfully";
     }
 
-    public String addAllEmp(){
-        List<Employee> employee = List.of(
-                new Employee(2001 , "Ram" , "Java" , "Manager" ),
-        new Employee(2002 , "Raj" , "Java" , "Manager" ),
-        new Employee(2003 , "Rahul" , "Java" , "Manager" ),
-        new Employee(2004 , "Diya" , "Java" , "Admin" )
-        );
-        employeeRepo.saveAll(employee);
-        return "All employee added" ;
+    public List<Employee> getAllEmp() {
+        return employeeRepo.findAll();
     }
 
-    public List<Employee> getAllEmp(){
-        return employeeRepo.findAll() ;
+    public Employee getEmpById(Long empId) {
+        return employeeRepo.findById(empId).orElse(null);
     }
 
-    public String deleteEmpById(Long empid){
-        employeeRepo.deleteById(empid);
-        return "Employee Deleted" ;
-    }
-
-    public String updateEmpById(Long empid){
-        if(employeeRepo.existsById(empid)){
-            employeeRepo.deleteById(empid);
+    public String deleteById(Long empId) {
+        if (employeeRepo.existsById(empId)) {
+            employeeRepo.deleteById(empId);
+            return "Employee deleted successfully";
         }
-        return "Employee Updated" ;
+
+        return "Employee not found with ID: " + empId;
+    }
+
+    public Employee updateById(Long empId, Employee e) {
+        Employee existingEmployee = employeeRepo.findById(empId).orElse(null);
+
+        if (existingEmployee != null) {
+            existingEmployee.setEmp_name(e.getEmp_name());
+            existingEmployee.setDesignation(e.getDesignation());
+            existingEmployee.setProgStack(e.getProgStack());
+            existingEmployee.setEmail(e.getEmail());
+
+            return employeeRepo.save(existingEmployee);
+        }
+
+        return null;
+    }
+
+    public String verification(Employee emp) {
+        if (emp == null) {
+            return "Employee details are required";
+        }
+
+        // 1. If employee ID is provided, verify by ID and match with email (if email is also provided)
+        if (emp.getEmp_id() != null && emp.getEmp_id() != 0) {
+            Optional<Employee> existingOpt = employeeRepo.findById(emp.getEmp_id());
+            if (existingOpt.isEmpty()) {
+                return "Employee not found with ID: " + emp.getEmp_id();
+            }
+
+            Employee existing = existingOpt.get();
+            if (emp.getEmail() != null && !emp.getEmail().isBlank()) {
+                if (existing.getEmail() != null && existing.getEmail().equalsIgnoreCase(emp.getEmail())) {
+                    return "Verification successful";
+                }
+                return "Email does not match our records";
+            }
+            return "Verification successful";
+        }
+
+        // 2. If only email is provided, verify by email
+        if (emp.getEmail() != null && !emp.getEmail().isBlank()) {
+            Optional<Employee> existingOpt = employeeRepo.findByEmail(emp.getEmail());
+            if (existingOpt.isPresent()) {
+                return "Verification successful";
+            }
+            return "Employee not found with email: " + emp.getEmail();
+        }
+
+        return "Please provide employee ID and email for verification";
     }
 }

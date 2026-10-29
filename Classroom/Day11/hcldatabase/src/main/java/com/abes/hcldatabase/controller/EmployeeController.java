@@ -8,40 +8,53 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/v1/users")
 public class EmployeeController {
+
     @Autowired
-    private EmployeeService  employeeService ;
+    private EmployeeService employeeService;
+
     @GetMapping("/")
-    public String msg() {
-        return "<h1>Welcome</h1>";
-    }
-    @GetMapping("/add")
-    public String addemp(){
-        return employeeService.createNewEmployee();
+    public String message() {
+        return "Welcome";
     }
 
-    @GetMapping("/getemp/{empid}")
-    public Employee getemp(@PathVariable  Long empid){
-        return employeeService.getEmpById(empid);
+    @PostMapping("/add")
+    public String addEmployee(@RequestBody Employee employee) {
+        return employeeService.createEmployee(employee);
     }
 
-    @GetMapping("/addall")
-    public String addAllEmp(){
-        return employeeService.addAllEmp() ;
+    @PostMapping("/addBulk")
+    public String addInBulk(@RequestBody List<Employee> employees) {
+        return employeeService.addEmployeeBulk(employees);
     }
 
-    @GetMapping("/getall")
-    public List<Employee> getAllEmp(){
-        return employeeService.getAllEmp() ;
+    @PostMapping("/login")
+    public String login(@RequestBody Employee employee) {
+        return employeeService.verification(employee);
     }
 
-    @DeleteMapping("/delete/{empid}")
-    public String deleteById(@PathVariable  Long empid){
-        return employeeService.deleteEmpById(empid) ;
+
+    @GetMapping("/employees")
+    public List<Employee> getAllEmployees() {
+        return employeeService.getAllEmp();
     }
 
-    @PutMapping("/update/{empid}")
-    public String upadate(@PathVariable  Long empid){
-        return employeeService.updateEmpById(empid) ;
+    @GetMapping("/get/{id}")
+    public Employee getEmpById(@PathVariable("id") Long empId) {
+        return employeeService.getEmpById(empId);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteEmpById(@PathVariable("id") Long empId) {
+        return employeeService.deleteById(empId);
+    }
+
+    @PutMapping("/update/{id}")
+    public Employee updateEmpById(
+            @PathVariable("id") Long empId,
+            @RequestBody Employee employee) {
+        return employeeService.updateById(empId, employee);
     }
 }

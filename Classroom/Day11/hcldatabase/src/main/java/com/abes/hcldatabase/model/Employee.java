@@ -5,27 +5,31 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Employee {
+
     @Id
-    private long emp_id ;
-    private String emp_name ;
-    private String stack ;
-    private String designation ;
+    private Long emp_id;
 
-    public Employee(){
+    private String emp_name;
+    private String designation;
+    private String progStack;
+    private String email;
 
+    public Employee() {
     }
-    public Employee(long emp_id, String emp_name, String stack, String designation) {
+
+    public Employee(Long emp_id, String emp_name, String designation, String progStack, String email) {
         this.emp_id = emp_id;
         this.emp_name = emp_name;
-        this.stack = stack;
         this.designation = designation;
+        this.progStack = progStack;
+        this.email = email;
     }
 
-    public long getEmp_id() {
+    public Long getEmp_id() {
         return emp_id;
     }
 
-    public void setEmp_id(long emp_id) {
+    public void setEmp_id(Long emp_id) {
         this.emp_id = emp_id;
     }
 
@@ -37,19 +41,27 @@ public class Employee {
         this.emp_name = emp_name;
     }
 
-    public String getStack() {
-        return stack;
-    }
-
-    public void setStack(String stack) {
-        this.stack = stack;
-    }
-
     public String getDesignation() {
         return designation;
     }
 
     public void setDesignation(String designation) {
         this.designation = designation;
+    }
+
+    public String getProgStack() {
+        return progStack;
+    }
+
+    public void setProgStack(String progStack) {
+        this.progStack = progStack;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
