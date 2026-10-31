@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<PostRepository, Long> {
-    List<Post> findAllByOrderByCreatedAtDes() ;
+public interface PostRepository extends JpaRepository<Post, Long> {
+    List<Post> findAllByOrderByCreatedAtDesc() ;
 }
