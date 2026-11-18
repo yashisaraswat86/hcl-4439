@@ -5,6 +5,7 @@ import com.hcld2.jwtdemo.dto.AuthResponse;
 import com.hcld2.jwtdemo.dto.StatusResponse;
 import com.hcld2.jwtdemo.entity.User;
 import com.hcld2.jwtdemo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,24 +19,20 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
-    public StatusResponse registerUser(AuthRequest req) {
-        if (users.findByUsername(req.username()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already in use");
+    public StatusResponse registerUser(AuthRequest authRequest) {
+        if(users.findByUsername(authRequest.username()).isPresent()){
+            return new StatusResponse("error","Username already in use");
         }
-
-        users.save(new User(req.username(), encoder.encode(req.password())));
-        return new StatusResponse("User registered successfully");
+        users.save(new User(authRequest.username(), encoder.encode(authRequest.password())));
+        return new StatusResponse("message","User successfully registered");
     }
 
     public AuthResponse login(AuthRequest req) {
-        var user = users.findByUsername(req.username())
-                .filter(u -> encoder.matches(req.password(), u.getPassword()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password is incorrect"));
-
-        return new AuthResponse(
-                jwt.generateToken(user.getUsername()),
-                user.getUsername()
-        );
+        var user = users.findByUsername(req.username()).orElse(null);
+        if(user == null || !encoder.matches(req.password(), user.getPassword())){
+            return new AuthResponse("error","username or password is incorrect");
+        }
+        return new AuthResponse(jwt.generateToken(user.getUsername()), user.getUsername());
     }
-}
 
+}

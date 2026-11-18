@@ -4,6 +4,7 @@ import com.hcld2.jwtdemo.dto.PostRequest;
 import com.hcld2.jwtdemo.dto.PostResponse;
 import com.hcld2.jwtdemo.entity.Post;
 import com.hcld2.jwtdemo.repository.PostRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +13,21 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class PostService {
-    private final PostRepository postRepository;
+    private final PostRepository posts;
 
+    @Transactional(readOnly = true)
     public List<PostResponse> findAll() {
-        return postRepository.findAllByOrderByCreatedAtDesc()
+        return posts.findAllByOrderByCreatedAtDesc()
                 .stream()
-                .map(PostResponse::fromEntity)
+                .map(PostResponse::from)
                 .toList();
     }
 
-    public PostResponse addPost(PostRequest req, String author) {
-        Post post = new Post(req.title(), req.content(), author);
-        Post saved = postRepository.save(post);
-        return PostResponse.fromEntity(saved);
+
+    @Transactional
+    public PostResponse addPost(PostRequest req, String username) {
+        Post saved = posts.save(new Post(req.title(), req.content(), username));
+        return PostResponse.from(saved);
     }
 }
 
