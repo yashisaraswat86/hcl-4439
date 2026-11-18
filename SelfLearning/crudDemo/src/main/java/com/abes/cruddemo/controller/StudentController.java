@@ -1,7 +1,7 @@
 package com.abes.cruddemo.controller;
 
 import com.abes.cruddemo.entity.Student;
-import com.abes.cruddemo.repository.StudentRepository;
+
 import com.abes.cruddemo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +16,7 @@ import java.util.List;
 public class StudentController {
     @Autowired
     private StudentService studentService ;
-    @Autowired
-    private StudentRepository studentRepository;
+
 
     //create student
     @PostMapping("/create")
@@ -31,7 +30,7 @@ public class StudentController {
     //read student
     @GetMapping("/read/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable Long id){
-        Student studentResp = studentService.readStudentById(id) ;
+        Student studentResp = studentService.readStudentById(id , false) ;
         if(studentResp == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -54,23 +53,31 @@ public class StudentController {
     }
 
     //update student
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id  , @RequestBody Student student){
-            Student updatedStudent = studentService.updateStudent(id , student) ;
-            try{
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(updatedStudent);
-            }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
+    @PutMapping("/update")
+    public ResponseEntity<Student> updateStudent(
+            @RequestParam Long id,
+            @RequestBody Student student) {
 
+        try {
+            Student updatedStudent = studentService.updateStudent(id, student);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedStudent);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     //delete student
     @DeleteMapping("/delete/{id}")
     public String deleteStudent(@PathVariable Long id){
-        studentRepository.deleteById(id);
+        studentService.deleteStudentById(id);
+        return "Student deleted successfully" ;
+    }
+
+    //soft delete
+    @PatchMapping("/softdelete/{id}")
+    public String softDeleteStudent(@PathVariable Long id){
+        studentService.softDeleteById(id);
         return "Student deleted successfully" ;
     }
 }

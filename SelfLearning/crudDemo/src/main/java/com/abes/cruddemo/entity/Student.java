@@ -1,17 +1,21 @@
 package com.abes.cruddemo.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity // Map with db
 public class Student {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // generate id automatically
     private Long id ;
     private String name;
     private int age;
     private String email;
     private int rollNo;
     private String subject;
+    private boolean deleted ;
 
     public Long getId() {
         return id;
@@ -59,5 +63,13 @@ public class Student {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
