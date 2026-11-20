@@ -1,4 +1,4 @@
-import { getStudents } from "./studentService";
+import { getStudents } from "./studentServices";
 
 describe("Student API Testing", () => {
   afterEach(() => {
