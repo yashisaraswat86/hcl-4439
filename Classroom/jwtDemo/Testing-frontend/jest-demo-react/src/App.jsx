@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import Student from './components/Student'
+import StudentForm from './components/StudentForm'
 
 
 function App() {
@@ -6,8 +8,8 @@ function App() {
 
   return (
     <>
-      <h1>Hello Vite + React!</h1>
-          </>
+      <StudentForm />
+    </>
   )
 }
 
