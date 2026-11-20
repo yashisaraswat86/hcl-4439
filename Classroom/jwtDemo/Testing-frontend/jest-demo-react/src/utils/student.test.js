@@ -16,4 +16,4 @@ describe('isEligible', () => {
   test('throws an error for attendance > 100', () => {
     expect(() => isEligible(110)).toThrow("Invalid attendance value. Please enter a value between 0 and 100.");
   });
-});
+}); 
