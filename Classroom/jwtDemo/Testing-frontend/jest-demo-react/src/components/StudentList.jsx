@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getStudents } from "../services/studentServices";
+import { getStudents } from "../service/studentServices";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);

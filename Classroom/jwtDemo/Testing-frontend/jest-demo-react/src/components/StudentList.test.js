@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 
 import StudentList from "./StudentList";
 
-import { getStudents, deleteStudent } from "../services/studentService";
+import { getStudents, deleteStudent } from "../service/studentServices";
 
 // Mock entire module
-jest.mock("../service/studentService", () => ({
+jest.mock("../service/studentServices", () => ({
   getStudents: jest.fn(),
 
   deleteStudent: jest.fn(),
