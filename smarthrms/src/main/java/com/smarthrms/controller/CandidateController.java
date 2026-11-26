@@ -24,4 +24,6 @@ public class CandidateController {
     }
 
 
+    public static class EmployeeController {
+    }
 }
