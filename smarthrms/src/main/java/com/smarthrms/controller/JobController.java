@@ -1,10 +1,12 @@
 package com.smarthrms.controller;
 
+import com.smarthrms.dto.JobResponse;
 import com.smarthrms.entity.Job;
 import com.smarthrms.service.JobService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,40 +21,68 @@ public class JobController {
         this.jobService = jobService;
     }
 
+    // Only ADMIN and RECRUITER can create jobs
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     @PostMapping
-    public ResponseEntity<Job> createJob(
+    public ResponseEntity<JobResponse> createJob(
             @RequestBody Job job,
             @RequestParam Long recruiterId) {
 
-        Job createdJob = jobService.createJob(job, recruiterId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
+        JobResponse createdJob =
+                jobService.createJob(job, recruiterId);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createdJob);
     }
 
+    // Anyone can view an individual job
+    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
-    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
+    public ResponseEntity<JobResponse> getJobById(
+            @PathVariable Long id) {
+
         try {
-            return ResponseEntity.ok(jobService.getJobById(id));
+            return ResponseEntity.ok(
+                    jobService.getJobById(id)
+            );
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
+    // Only ADMIN and RECRUITER can view all jobs
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     @GetMapping
-    public ResponseEntity<List<Job>> getAllJobs() {
-        return ResponseEntity.ok(jobService.getAllJobs());
+    public ResponseEntity<List<JobResponse>> getAllJobs() {
+
+        return ResponseEntity.ok(
+                jobService.getAllJobs()
+        );
     }
 
+    // Anyone can view published jobs
+    @PreAuthorize("permitAll()")
     @GetMapping("/published")
-    public ResponseEntity<List<Job>> getPublishedJobs() {
-        return ResponseEntity.ok(jobService.getPublishedJobs());
+    public ResponseEntity<List<JobResponse>> getPublishedJobs() {
+
+        return ResponseEntity.ok(
+                jobService.getPublishedJobs()
+        );
     }
 
+    // Only ADMIN and RECRUITER can publish jobs
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     @PatchMapping("/{id}/publish")
-    public ResponseEntity<Job> publishJob(@PathVariable Long id) {
+    public ResponseEntity<JobResponse> publishJob(
+            @PathVariable Long id) {
+
         try {
-            return ResponseEntity.ok(jobService.publishJob(id));
+            return ResponseEntity.ok(
+                    jobService.publishJob(id)
+            );
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 }
+
