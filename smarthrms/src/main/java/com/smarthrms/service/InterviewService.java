@@ -1,4 +1,3 @@
-
 package com.smarthrms.service;
 
 import com.smarthrms.entity.Application;
@@ -7,6 +6,7 @@ import com.smarthrms.enums.InterviewStatus;
 import com.smarthrms.repository.ApplicationRepository;
 import com.smarthrms.repository.InterviewRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +31,19 @@ public class InterviewService {
             Long applicationId,
             LocalDateTime scheduledAt,
             Integer durationMinutes,
-            String meetingLink) {
+            String meetingLink,
+            String email,
+            boolean isAdmin) {
 
-        Application application = applicationRepository
-                .findById(applicationId)
+        Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Application not found"));
+
+        if (!isAdmin &&
+                !application.getJob().getRecruiter().getEmail().equals(email)) {
+            throw new AccessDeniedException(
+                    "You are not authorized to schedule an interview for this application");
+        }
 
         if (scheduledAt == null || !scheduledAt.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException(
@@ -58,10 +65,31 @@ public class InterviewService {
         return interviewRepository.save(interview);
     }
 
-    public List<Interview> getInterviewsByApplication(Long applicationId) {
+    public List<Interview> getInterviewsByApplication(
+            Long applicationId,
+            String email,
+            boolean isAdmin,
+            boolean isRecruiter) {
 
-        if (!applicationRepository.existsById(applicationId)) {
-            throw new EntityNotFoundException("Application not found");
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Application not found"));
+
+        if (!isAdmin) {
+            boolean hasAccess;
+
+            if (isRecruiter) {
+                hasAccess = application.getJob().getRecruiter()
+                        .getEmail().equals(email);
+            } else {
+                hasAccess = application.getCandidate().getUser()
+                        .getEmail().equals(email);
+            }
+
+            if (!hasAccess) {
+                throw new AccessDeniedException(
+                        "You are not authorized to view these interviews");
+            }
         }
 
         return interviewRepository.findByApplication_Id(applicationId);
@@ -70,11 +98,20 @@ public class InterviewService {
     @Transactional
     public Interview updateInterviewStatus(
             Long interviewId,
-            InterviewStatus newStatus) {
+            InterviewStatus newStatus,
+            String email,
+            boolean isAdmin) {
 
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Interview not found"));
+
+        if (!isAdmin &&
+                !interview.getApplication().getJob().getRecruiter()
+                        .getEmail().equals(email)) {
+            throw new AccessDeniedException(
+                    "You are not authorized to update this interview");
+        }
 
         InterviewStatus currentStatus = interview.getStatus();
 
@@ -93,4 +130,3 @@ public class InterviewService {
         return interviewRepository.save(interview);
     }
 }
-
