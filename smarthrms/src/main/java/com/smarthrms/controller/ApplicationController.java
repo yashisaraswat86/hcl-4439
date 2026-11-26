@@ -4,9 +4,11 @@ import com.smarthrms.dto.ApplicationResponse;
 import com.smarthrms.dto.UpdateApplicationStatusRequest;
 import com.smarthrms.entity.Application;
 import com.smarthrms.service.ApplicationService;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,32 +24,45 @@ public class ApplicationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CANDIDATE')")
     public ResponseEntity<Application> applyToJob(
-            @RequestParam Long candidateId,
+            Authentication authentication,
             @RequestParam Long jobId) {
 
         Application application =
-                applicationService.applyToJob(candidateId, jobId);
+                applicationService.applyToJob(authentication.getName(), jobId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(application);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('CANDIDATE')")
     public ResponseEntity<List<ApplicationResponse>> getCandidateApplications(
-            @RequestParam Long candidateId) {
+            Authentication authentication) {
 
         return ResponseEntity.ok(
-                applicationService.getCandidateApplications(candidateId)
+                applicationService.getCandidateApplications(authentication.getName())
         );
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<ApplicationResponse> updateApplicationStatus(
             @PathVariable Long id,
-            @RequestBody UpdateApplicationStatusRequest request) {
+            @Valid @RequestBody UpdateApplicationStatusRequest request,
+            Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority ->
+                        authority.getAuthority().equals("ROLE_ADMIN"));
 
         return ResponseEntity.ok(
-                applicationService.updateApplicationStatus(id, request.status())
+                applicationService.updateApplicationStatus(
+                        id,
+                        request.status(),
+                        authentication.getName(),
+                        isAdmin
+                )
         );
     }
 }
