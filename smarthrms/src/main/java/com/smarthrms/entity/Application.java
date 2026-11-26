@@ -1,5 +1,6 @@
 package com.smarthrms.entity;
 
+import com.smarthrms.enums.ApplicationStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -26,8 +27,9 @@ public class Application {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "APPLIED";
+    private ApplicationStatus status = ApplicationStatus.APPLIED;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime appliedAt;
@@ -60,11 +62,11 @@ public class Application {
         this.job = job;
     }
 
-    public String getStatus() {
+    public ApplicationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 
