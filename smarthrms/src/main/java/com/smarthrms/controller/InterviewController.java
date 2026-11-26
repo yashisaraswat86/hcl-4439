@@ -9,6 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +26,22 @@ public class InterviewController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<InterviewResponse> scheduleInterview(
             @RequestParam Long applicationId,
-            @Valid @RequestBody InterviewRequest request) {
+            @Valid @RequestBody InterviewRequest request,
+            Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         Interview interview = interviewService.scheduleInterview(
                 applicationId,
                 request.scheduledAt(),
                 request.durationMinutes(),
-                request.meetingLink()
+                request.meetingLink(),
+                authentication.getName(),
+                isAdmin
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -40,20 +49,51 @@ public class InterviewController {
     }
 
     @GetMapping("/application/{applicationId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'CANDIDATE')")
     public ResponseEntity<List<InterviewResponse>> getInterviews(
-            @PathVariable Long applicationId) {
+            @PathVariable Long applicationId,
+            Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isRecruiter = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_RECRUITER"));
 
         List<InterviewResponse> interviews =
-                interviewService.getInterviewsByApplication(applicationId)
-                        .stream()
+                interviewService.getInterviewsByApplication(
+                                applicationId,
+                                authentication.getName(),
+                                isAdmin,
+                                isRecruiter
+                        ).stream()
                         .map(this::convertToResponse)
                         .toList();
 
         return ResponseEntity.ok(interviews);
     }
 
-    private InterviewResponse convertToResponse(Interview interview) {
+    @PatchMapping("/{interviewId}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
+    public ResponseEntity<InterviewResponse> updateInterviewStatus(
+            @PathVariable Long interviewId,
+            @Valid @RequestBody UpdateInterviewStatusRequest request,
+            Authentication authentication) {
 
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        Interview interview = interviewService.updateInterviewStatus(
+                interviewId,
+                request.status(),
+                authentication.getName(),
+                isAdmin
+        );
+
+        return ResponseEntity.ok(convertToResponse(interview));
+    }
+
+    private InterviewResponse convertToResponse(Interview interview) {
         return new InterviewResponse(
                 interview.getId(),
                 interview.getApplication().getId(),
@@ -73,18 +113,5 @@ public class InterviewController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
-    }
-
-    @PatchMapping("/{interviewId}/status")
-    public ResponseEntity<InterviewResponse> updateInterviewStatus(
-            @PathVariable Long interviewId,
-            @Valid @RequestBody UpdateInterviewStatusRequest request) {
-
-        Interview interview = interviewService.updateInterviewStatus(
-                interviewId,
-                request.status()
-        );
-
-        return ResponseEntity.ok(convertToResponse(interview));
     }
 }
