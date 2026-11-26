@@ -1,8 +1,11 @@
+
 package com.smarthrms.service;
 
+import com.smarthrms.dto.JobResponse;
+import com.smarthrms.dto.RecruiterSummaryResponse;
 import com.smarthrms.entity.Job;
-import com.smarthrms.enums.Role;
 import com.smarthrms.entity.User;
+import com.smarthrms.enums.Role;
 import com.smarthrms.repository.JobRepository;
 import com.smarthrms.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,7 +27,8 @@ public class JobService {
     }
 
     @Transactional
-    public Job createJob(Job job, Long recruiterId) {
+    public JobResponse createJob(Job job, Long recruiterId) {
+
         User recruiter = userRepository.findById(recruiterId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Recruiter not found"));
@@ -35,27 +39,76 @@ public class JobService {
         }
 
         job.setRecruiter(recruiter);
-        return jobRepository.save(job);
+
+        Job savedJob = jobRepository.save(job);
+
+        return mapToResponse(savedJob);
     }
 
-    public Job getJobById(Long id) {
-        return jobRepository.findById(id)
+    @Transactional(readOnly = true)
+    public JobResponse getJobById(Long id) {
+
+        Job job = jobRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Job not found"));
+
+        return mapToResponse(job);
     }
 
-    public List<Job> getAllJobs() {
-        return jobRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<JobResponse> getAllJobs() {
+
+        return jobRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
-    public List<Job> getPublishedJobs() {
-        return jobRepository.findByStatus("PUBLISHED");
+    @Transactional(readOnly = true)
+    public List<JobResponse> getPublishedJobs() {
+
+        return jobRepository.findByStatus("PUBLISHED")
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Transactional
-    public Job publishJob(Long id) {
-        Job job = getJobById(id);
+    public JobResponse publishJob(Long id) {
+
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Job not found"));
+
         job.setStatus("PUBLISHED");
-        return jobRepository.save(job);
+
+        Job updatedJob = jobRepository.save(job);
+
+        return mapToResponse(updatedJob);
+    }
+
+    private JobResponse mapToResponse(Job job) {
+
+        User recruiter = job.getRecruiter();
+
+        RecruiterSummaryResponse recruiterResponse =
+                new RecruiterSummaryResponse(
+                        recruiter.getId(),
+                        recruiter.getName(),
+                        recruiter.getEmail()
+                );
+
+        return new JobResponse(
+                job.getId(),
+                job.getTitle(),
+                job.getDescription(),
+                job.getLocation(),
+                job.getEmploymentType(),
+                job.getSalaryMin(),
+                job.getSalaryMax(),
+                job.getStatus(),
+                job.getCreatedAt(),
+                recruiterResponse
+        );
     }
 }
